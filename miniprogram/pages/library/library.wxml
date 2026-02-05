@@ -1,0 +1,165 @@
+<view class="container">
+  <!-- 状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 顶部搜索栏 -->
+  <view class="header" style="height: {{navBarHeight}}px;">
+    <view class="add-btn" bindtap="showAddForm">
+      <image class="icon-img" src="/images/icon-add.svg" mode="aspectFit"></image>
+    </view>
+    <view class="search-box">
+      <image class="search-icon-img" src="/images/icon-search.svg" mode="aspectFit"></image>
+      <input 
+        class="search-input" 
+        placeholder="SEARCH..." 
+        placeholder-class="search-placeholder"
+        value="{{searchQuery}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+    <view class="header-spacer" style="width: {{headerSpacerWidth}}px;"></view>
+  </view>
+
+  <!-- 书籍卡片区域 -->
+  <view class="card-area" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+    <block wx:if="{{volumes.length > 0}}">
+      <!-- 背景卡片堆叠 -->
+      <view 
+        wx:for="{{2}}" 
+        wx:key="index"
+        wx:if="{{currentIndex + index + 1 < volumes.length}}"
+        class="bg-card"
+        style="transform: translateY({{(index + 1) * 20}}rpx) scale({{1 - (index + 1) * 0.04}}); opacity: {{1 - (index + 1) * 0.3}}; z-index: {{10 - index}};"
+      ></view>
+
+      <!-- 左右点击热区 -->
+      <view class="hotspots">
+        <view class="hotspot-left" catchtap="prevVolume"></view>
+        <view class="hotspot-center"></view>
+        <view class="hotspot-right" catchtap="nextVolume"></view>
+      </view>
+
+      <!-- 主卡片 -->
+      <view 
+        wx:for="{{volumes}}" 
+        wx:key="_id"
+        class="volume-card {{index === currentIndex ? 'active' : (index < currentIndex ? 'left' : 'right')}}"
+        style="z-index: {{index === currentIndex ? 40 : 10}};"
+        data-id="{{item._id}}"
+        bindtap="goToBookmark"
+      >
+        <!-- 作者标签 -->
+        <view class="author-tag" wx:if="{{index === currentIndex}}">
+          <text>{{item.author || 'ANONYMOUS'}}</text>
+        </view>
+
+        <!-- 分类标签 -->
+        <block wx:if="{{index === currentIndex}}">
+          <view 
+            wx:for="{{item.classifications}}" 
+            wx:for-item="tag"
+            wx:for-index="tagIndex"
+            wx:key="tagIndex"
+            class="classification-tag tag-{{tagIndex}}"
+            catchtap="showTagPopup"
+            data-tag="{{tag}}"
+          >
+            <text>{{tag}}</text>
+          </view>
+        </block>
+
+        <!-- 卡片内容 -->
+        <view class="card-content">
+          <view class="card-header">
+            <view class="archive-label">
+              <text class="label-text">ARCHIVE VOL.</text>
+            </view>
+            <view class="edit-area" wx:if="{{index === currentIndex}}">
+              <view class="edit-btn" catchtap="openEdit" data-id="{{item._id}}">
+                <image class="edit-icon-img" src="/images/icon-edit.svg" mode="aspectFit"></image>
+              </view>
+            </view>
+          </view>
+          <view class="card-body">
+            <text class="title">{{item.title}}</text>
+          </view>
+          <view class="archive-id">
+            <text>ID: {{item.archivalId}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty-state">
+      <text>Registry is empty.</text>
+    </view>
+  </view>
+
+  <!-- 底部翻页导航 -->
+  <view class="footer">
+    <view class="nav-buttons">
+      <text class="nav-btn {{currentIndex === 0 ? 'disabled' : ''}}" bindtap="prevVolume">BACK</text>
+      <view class="dot"></view>
+      <text class="nav-btn {{currentIndex >= volumes.length - 1 ? 'disabled' : ''}}" bindtap="nextVolume">FORWARD</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress" style="width: {{volumes.length ? ((currentIndex + 1) / volumes.length) * 100 : 0}}%;"></view>
+    </view>
+  </view>
+
+  <!-- 添加/编辑弹窗 -->
+  <view class="modal" wx:if="{{showModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <text class="modal-title">{{editingId ? 'EDIT BOOK VOLUME' : 'ADD NEW BOOK VOLUME'}}</text>
+      <view class="modal-form">
+        <view class="form-fields">
+          <view class="form-group">
+            <text class="form-label">TITLE</text>
+            <input class="form-input" value="{{formData.title}}" bindinput="onTitleInput" focus="{{showModal}}" placeholder-class="input-placeholder" />
+          </view>
+          <view class="form-group">
+            <text class="form-label">AUTHOR</text>
+            <input class="form-input" value="{{formData.author}}" bindinput="onAuthorInput" placeholder-class="input-placeholder" />
+          </view>
+          <view class="form-group">
+            <text class="form-label">CLASSIFICATIONS</text>
+            <input class="form-input" value="{{formData.classificationInput}}" bindinput="onClassificationInput" placeholder="Separate with commas..." placeholder-class="input-placeholder" />
+          </view>
+        </view>
+        <view class="form-actions">
+          <view class="btn-cancel" bindtap="closeModal">CANCEL</view>
+          <view class="btn-save" bindtap="handleSubmit">SAVE</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签弹窗 -->
+  <view class="tag-popup" wx:if="{{activeTagPopup}}" bindtap="closeTagPopup">
+    <view class="tag-popup-content" catchtap="stopPropagation">
+      <view class="popup-handle"></view>
+      <view class="popup-header">
+        <text class="popup-title">Volumes under: <text class="highlight">{{activeTagPopup}}</text></text>
+        <image class="close-btn-img" src="/images/icon-close.svg" mode="aspectFit" bindtap="closeTagPopup"></image>
+      </view>
+      <scroll-view scroll-y class="tag-volumes-list">
+        <view 
+          wx:for="{{volumesWithSameTag}}" 
+          wx:key="_id" 
+          class="tag-volume-item"
+          bindtap="jumpToVolume"
+          data-id="{{item._id}}"
+        >
+          <view class="tag-volume-info">
+            <text class="tag-volume-title">{{item.title}}</text>
+            <text class="tag-volume-author">{{item.author || 'ANONYMOUS'}}</text>
+          </view>
+          <text class="tag-volume-id">{{item.archivalId}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部导航 -->
+  <navigation active="library"></navigation>
+</view>

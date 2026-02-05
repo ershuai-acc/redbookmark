@@ -1,0 +1,84 @@
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140rpx;
+  /* background: #F2E8CF; Managed by theme classes */
+  transition: background-color 0.3s;
+  border-top: 2rpx solid #D31526;
+  border-left: 1rpx solid rgba(211,21,38,0.05);
+  border-right: 1rpx solid rgba(211,21,38,0.05);
+  display: flex;
+  align-items: stretch;
+  z-index: 100;
+  box-shadow: 0 -8rpx 40rpx rgba(0,0,0,0.05);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  /* opacity: 0.3; Removed to allow full color control */
+  transition: all 0.3s;
+  background: transparent;
+}
+
+.nav-item:first-child {
+  border-right: 2rpx solid #D31526;
+}
+
+.nav-item.active {
+  opacity: 1;
+  background: transparent;
+}
+
+.nav-item.active .nav-label {
+  /* Color managed by theme */
+}
+
+/* Red Theme (Library Active) */
+.navigation.theme-red {
+  background: #D31526;
+  border-top-color: rgba(255,255,255,0.1);
+}
+
+.navigation.theme-red .nav-label {
+  color: #F2E8CF;
+}
+
+/* Cream Theme (Profile Active) */
+.navigation.theme-cream {
+  background: #F2E8CF;
+  border-top-color: #D31526;
+}
+
+.navigation.theme-cream .nav-label {
+  color: #D31526;
+}
+
+.nav-item {
+  opacity: 0.5; /* Default inactive opacity */
+}
+
+.nav-icon {
+  font-size: 36rpx;
+  color: #D31526;
+}
+
+.nav-icon-img {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.nav-label {
+  font-size: 15rpx;
+  text-transform: uppercase;
+  letter-spacing: 4rpx;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-weight: 700;
+  color: #D31526;
+}

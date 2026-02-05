@@ -1,0 +1,112 @@
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-section">
+    <view class="avatar-wrapper">
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <view class="avatar-border">
+          <image class="avatar" src="{{userInfo.avatarUrl || '/images/icon-person.svg'}}" mode="aspectFill" />
+        </view>
+        <view class="edit-hint">
+          <image class="edit-icon" src="/images/icon-camera.svg" mode="aspectFit"></image>
+        </view>
+      </button>
+    </view>
+    <input 
+      class="username-input" 
+      type="nickname" 
+      placeholder="Click to set nickname"
+      value="{{userInfo.nickName}}"
+      bindinput="onNicknameInput"
+      bindblur="onNicknameBlur"
+    />
+    <text class="user-subtitle">@DAILY READING LOG</text>
+  </view>
+
+  <!-- 分类标签 -->
+  <view class="classification-section">
+    <text class="section-title">CLASSIFICATION</text>
+    <view class="tag-list">
+      <view 
+        wx:for="{{displayClassifications}}" 
+        wx:key="index"
+        class="tag-item"
+        bindtap="showTagPopup"
+        data-tag="{{item}}"
+      >
+        <text>{{item}}</text>
+      </view>
+      <view wx:if="{{displayClassifications.length === 0}}" class="tag-item">
+        <text>NO TAGS YET</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 阅读活动热力图 -->
+  <view class="activity-section">
+    <view class="activity-header">
+      <text class="section-title">READING ACTIVITY LOG</text>
+      <text class="year-label">YEAR {{currentYear}}</text>
+    </view>
+    <scroll-view scroll-x class="heatmap-scroll">
+      <view class="heatmap-grid">
+        <view 
+          wx:for="{{heatmapData}}" 
+          wx:key="index"
+          class="heatmap-cell"
+          style="background-color: rgba(211, 21, 38, {{item.opacity}});"
+        >
+          <text wx:if="{{item.isFirstOfMonth}}" class="month-label">{{item.monthLabel}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="stats-grid">
+    <view class="stat-item border-right border-bottom">
+      <text class="stat-label">VOLUME</text>
+      <text class="stat-value">{{stats.totalVolumes}}</text>
+    </view>
+    <view class="stat-item border-bottom">
+      <text class="stat-label">LOG</text>
+      <text class="stat-value">{{stats.daysLogged}}</text>
+    </view>
+    <view class="stat-item border-right">
+      <text class="stat-label">MARK</text>
+      <text class="stat-value">{{stats.totalMarksDisplay}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">TAGS</text>
+      <text class="stat-value">{{stats.classificationCount}}</text>
+    </view>
+  </view>
+
+  <!-- 标签弹窗 -->
+  <view class="tag-popup" wx:if="{{activeTagPopup}}" bindtap="closeTagPopup">
+    <view class="tag-popup-content" catchtap="stopPropagation">
+      <view class="popup-handle"></view>
+      <view class="popup-header">
+        <text class="popup-title">Volumes under: <text class="highlight">{{activeTagPopup}}</text></text>
+        <image class="close-btn-img" src="/images/icon-close.svg" mode="aspectFit" bindtap="closeTagPopup"></image>
+      </view>
+      <scroll-view scroll-y class="tag-volumes-list">
+        <view 
+          wx:for="{{volumesWithSameTag}}" 
+          wx:key="_id" 
+          class="tag-volume-item"
+          bindtap="jumpToVolume"
+          data-id="{{item._id}}"
+        >
+          <view class="tag-volume-info">
+            <text class="tag-volume-title">{{item.title}}</text>
+            <text class="tag-volume-author">{{item.author || 'ANONYMOUS'}}</text>
+          </view>
+          <text class="tag-volume-id">{{item.archivalId}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部导航 -->
+  <navigation active="profile"></navigation>
+</view>

@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Archival Bookshelf</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#D31526",
+                        paper: "#F2E8CF",
+                        "paper-dark": "#e5d9ba",
+                        cream: "#FAF9F6",
+                    },
+                    fontFamily: {
+                        display: ["DM Serif Display", "serif"],
+                        sans: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"],
+                        newsreader: ["Newsreader", "serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        @layer utilities {
+            .folder-tab-shape {
+                clip-path: polygon(0% 100%, 0% 15%, 70% 15%, 85% 0%, 100% 0%, 100% 100%);
+            }
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        
+        :root {
+            --card-bg: #F2E8CF;
+            --card-text: #D31526;
+            --card-accent: rgba(211, 21, 38, 0.1);
+            --card-divider: rgba(211, 21, 38, 0.2);
+        }
+
+        .export-red-theme {
+            --card-bg: #D31526;
+            --card-text: #F2E8CF;
+            --card-accent: rgba(242, 232, 207, 0.2);
+            --card-divider: rgba(242, 232, 207, 0.4);
+        }
+
+        .dynamic-card {
+            background-color: var(--card-bg);
+            color: var(--card-text);
+        }
+
+        .dynamic-divider {
+            background-color: var(--card-divider);
+        }
+
+        .dynamic-border {
+            border-color: var(--card-accent);
+        }
+
+        .dynamic-text-muted {
+            color: var(--card-text);
+            opacity: 0.4;
+        }
+
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #F2E8CF;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "html-to-image": "https://esm.sh/html-to-image@1.11.11",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

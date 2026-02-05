@@ -1,0 +1,10 @@
+<view class="navigation {{active === 'library' ? 'theme-red' : 'theme-cream'}}">
+  <view class="nav-item {{active === 'library' ? 'active' : ''}}" bindtap="goLibrary">
+    <image class="nav-icon-img" src="/images/icon-folder{{active === 'library' ? '-active' : ''}}.svg" mode="aspectFit"></image>
+    <text class="nav-label">LIBRARY</text>
+  </view>
+  <view class="nav-item {{active === 'profile' ? 'active' : ''}}" bindtap="goProfile">
+    <image class="nav-icon-img" src="/images/icon-person{{active === 'library' ? '-active' : ''}}.svg" mode="aspectFit"></image>
+    <text class="nav-label">PROFILE</text>
+  </view>
+</view>

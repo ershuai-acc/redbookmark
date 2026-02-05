@@ -1,0 +1,53 @@
+<view class="container">
+  <!-- 状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 头部 -->
+  <view class="header" style="height: {{navBarHeight}}px;">
+    <view class="header-info">
+      <text class="volume-title">{{volume.title || 'Shared Mark'}}</text>
+      <text class="volume-author">AUTHOR: {{volume.author || 'ANONYMOUS'}}</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text class="loading-text">Loading...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:elif="{{error}}" class="error-state">
+    <text class="error-text">{{error}}</text>
+    <view class="action-btn" bindtap="goToLibrary">
+      <text>Go to My Library</text>
+    </view>
+  </view>
+
+  <!-- 书签内容 -->
+  <view wx:else class="mark-area">
+    <view class="mark-card">
+      <view class="mark-content">
+        <view class="divider"></view>
+        <text class="mark-text">"{{mark.text}}"</text>
+        <view class="divider"></view>
+      </view>
+      <view class="mark-footer">
+        <view class="footer-item">
+          <text class="footer-label">VOLUME</text>
+          <text class="footer-value">{{volume.title}}</text>
+        </view>
+        <view class="footer-item center">
+          <text class="footer-label">PAGE</text>
+          <text class="footer-value">{{mark.page || 'N/A'}}</text>
+        </view>
+        <view class="footer-item right">
+          <text class="footer-label">DATE</text>
+          <text class="footer-value">{{mark.date}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部导航 -->
+  <navigation active=""></navigation>
+</view>

@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/library/library",
+    "pages/bookmark/bookmark",
+    "pages/profile/profile",
+    "pages/shared/shared"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#D31526",
+    "navigationBarTitleText": "Archival Bookshelf",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#D31526",
+    "navigationStyle": "custom"
+  },
+  "sitemapLocation": "sitemap.json",
+  "cloud": true
+}

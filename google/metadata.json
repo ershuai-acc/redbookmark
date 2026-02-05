@@ -1,0 +1,7 @@
+{
+  "name": "Archival Bookshelf",
+  "description": "A digital library prototype for archiving books and bookmarks with a vintage, archival aesthetic.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

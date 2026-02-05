@@ -1,0 +1,165 @@
+<view class="container">
+  <!-- 状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 头部 -->
+  <view class="header" style="height: {{navBarHeight}}px;">
+    <view class="back-btn" bindtap="goBack">
+      <image class="back-icon-img" src="/images/icon-back.svg" mode="aspectFit"></image>
+    </view>
+    <view class="header-info">
+      <text class="volume-title">{{volume.title || 'Untitled'}}</text>
+      <text class="volume-author">AUTHOR: {{volume.author || 'ANONYMOUS'}}</text>
+    </view>
+  </view>
+
+  <!-- 书签卡片区域 -->
+  <view class="mark-area">
+    <!-- 标签页导航 -->
+    <view class="tab-nav">
+      <view class="tab-btn {{activeTab === 0 ? 'disabled' : ''}}" bindtap="handlePrev">
+        <text>PREV</text>
+      </view>
+      <view class="tab-active">
+        <text>{{marks.length > 0 ? 'MARK_' + (activeTab + 1) : 'EMPTY'}}</text>
+      </view>
+      <view class="tab-btn tab-next {{activeTab >= marks.length - 1 ? 'disabled' : ''}}" bindtap="handleNext">
+        <text>NEXT</text>
+      </view>
+      <view class="tab-add" bindtap="showAddModal">
+        <image class="add-icon-img" src="/images/icon-add.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <!-- 书签卡片 -->
+    <view class="mark-card" id="markCard">
+      <block wx:if="{{currentMark}}">
+        <view class="mark-content {{currentMark.vertical ? 'vertical' : ''}}" bindtap="showEditModal">
+          <text class="mark-text">"{{currentMark.text}}"</text>
+          <view class="divider"></view>
+          <text class="edit-hint">Tap to edit</text>
+        </view>
+        <view class="mark-footer">
+          <view class="footer-item">
+            <text class="footer-label">VOLUME</text>
+            <text class="footer-value">{{volume.title}}</text>
+          </view>
+          <view class="footer-item center">
+            <text class="footer-label">PAGE</text>
+            <text class="footer-value">{{currentMark.page || 'N/A'}}</text>
+          </view>
+          <view class="footer-item right">
+            <text class="footer-label">DATE</text>
+            <text class="footer-value">{{currentMark.date}}</text>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="empty-mark">
+        <image class="empty-icon-img" src="/images/icon-book.svg" mode="aspectFit"></image>
+        <text class="empty-text">Registry is empty.</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="action-bar">
+    <button class="action-btn share-btn" open-type="share">
+      <image class="action-icon-img" src="/images/icon-share.svg" mode="aspectFit"></image>
+      <text class="action-label">Share Mark</text>
+    </button>
+    <view class="action-btn" bindtap="exportCard">
+      <image class="action-icon-img" src="/images/icon-image.svg" mode="aspectFit"></image>
+      <text class="action-label">Export Card</text>
+    </view>
+    <view class="action-btn" bindtap="exportAllMarks">
+      <image class="action-icon-img" src="/images/icon-download.svg" mode="aspectFit"></image>
+      <text class="action-label">Export All</text>
+    </view>
+  </view>
+
+  <!-- 添加书签弹窗 -->
+  <view class="modal" wx:if="{{showModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <text class="modal-title">ADD MARK</text>
+      <view class="form-group">
+        <view class="form-header">
+          <text class="form-label">CONTENT</text>
+          <view class="ocr-btn" bindtap="chooseImage">
+            <image class="ocr-icon-img" src="/images/icon-camera.svg" mode="aspectFit"></image>
+            <text class="ocr-text">OCR</text>
+          </view>
+        </view>
+        <textarea 
+          class="form-textarea edit-textarea" 
+          value="{{newMarkText}}" 
+          bindinput="onMarkTextInput"
+          placeholder="Enter your mark..."
+          placeholder-class="textarea-placeholder"
+        />
+      </view>
+      <view class="form-group">
+        <text class="form-label">PAGE / LOCATION</text>
+        <input 
+          class="form-input" 
+          value="{{newPageNumber}}" 
+          bindinput="onPageInput"
+          placeholder="e.g., Ch. 3, Page 42"
+          placeholder-class="input-placeholder"
+        />
+      </view>
+      <view class="form-group form-row">
+        <text class="form-label">VERTICAL TEXT</text>
+        <switch checked="{{newVertical}}" bindchange="onNewVerticalChange" color="#D31526" />
+      </view>
+      <view class="form-actions">
+        <view class="btn-cancel" bindtap="closeModal">CANCEL</view>
+        <view class="btn-save" bindtap="handleAddSubmit">SAVE</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑书签弹窗 -->
+  <view class="modal" wx:if="{{showEditModal}}" bindtap="closeEditModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <text class="modal-title">EDIT MARK</text>
+      <view class="form-group">
+        <view class="form-header">
+          <text class="form-label">CONTENT</text>
+          <view class="ocr-btn" bindtap="chooseImageForEdit">
+            <image class="ocr-icon-img" src="/images/icon-camera.svg" mode="aspectFit"></image>
+            <text class="ocr-text">OCR</text>
+          </view>
+        </view>
+        <textarea 
+          class="form-textarea edit-textarea" 
+          value="{{editMarkText}}" 
+          bindinput="onEditMarkTextInput"
+          placeholder="Enter your mark..."
+          placeholder-class="textarea-placeholder"
+        />
+      </view>
+      <view class="form-group">
+        <text class="form-label">PAGE / LOCATION</text>
+        <input 
+          class="form-input" 
+          value="{{editPageNumber}}" 
+          bindinput="onEditPageInput"
+          placeholder="e.g., Ch. 3, Page 42"
+          placeholder-class="input-placeholder"
+        />
+      </view>
+      <view class="form-group form-row">
+        <text class="form-label">VERTICAL TEXT</text>
+        <switch checked="{{editVertical}}" bindchange="onEditVerticalChange" color="#D31526" />
+      </view>
+      <view class="form-actions">
+        <view class="btn-delete" bindtap="handleDeleteMark">DELETE</view>
+        <view class="btn-cancel" bindtap="closeEditModal">CANCEL</view>
+        <view class="btn-save" bindtap="handleEditSubmit">SAVE</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 离屏 Canvas 用于导出图片 -->
+  <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
+</view>
