@@ -72,9 +72,12 @@
         <view class="card-content">
           <view class="card-header">
             <view class="archive-label">
-              <text class="label-text">ARCHIVE VOL.</text>
+              <text class="label-text">RED_BOOKMARK</text>
             </view>
             <view class="edit-area" wx:if="{{index === currentIndex}}">
+              <view class="upload-btn" catchtap="batchOCRUpload" data-id="{{item._id}}">
+                <image class="edit-icon-img" src="/images/icon-camera.svg" mode="aspectFit"></image>
+              </view>
               <view class="edit-btn" catchtap="openEdit" data-id="{{item._id}}">
                 <image class="edit-icon-img" src="/images/icon-edit.svg" mode="aspectFit"></image>
               </view>
@@ -84,7 +87,7 @@
             <text class="title">{{item.title}}</text>
           </view>
           <view class="archive-id">
-            <text>ID: {{item.archivalId}}</text>
+            <text>Create {{item.createDate}}</text>
           </view>
         </view>
       </view>

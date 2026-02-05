@@ -1,20 +1,42 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Red Bookmark
 
-# Run and deploy your AI Studio app
+读书笔记与书签管理应用，支持微信小程序和 Web 端。
 
-This contains everything you need to run your app locally.
+## 项目结构
 
-View your app in AI Studio: https://ai.studio/apps/drive/1MfiHy_ArzUMmLjueKb9KPx6Qj8_GPXvw
+```
+archival-bookshelf/
+├── miniprogram/     # 微信小程序
+│   ├── pages/       # 页面
+│   ├── components/  # 组件
+│   ├── cloudfunctions/  # 云函数
+│   └── ...
+├── web/             # Web 端
+│   ├── pages/       # 页面
+│   ├── components/  # 组件
+│   └── ...
+└── README.md
+```
 
-## Run Locally
+## 微信小程序
 
-**Prerequisites:**  Node.js
+使用微信开发者工具打开 `miniprogram` 文件夹。
 
+### 功能
+- 书籍管理（添加、编辑、分类标签）
+- 书签管理（OCR 识别、批量导入）
+- 书签卡片导出
+- 分享功能
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 云开发
+需要开通微信云开发，创建以下数据库集合：
+- `volumes` - 书籍
+- `marks` - 书签
+
+## Web 端
+
+```bash
+cd web
+npm install
+npm run dev
+```

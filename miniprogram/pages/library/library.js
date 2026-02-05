@@ -54,7 +54,11 @@ Page({
         data: {}
       });
       if (res.result && res.result.success) {
-        this.allVolumes = res.result.data || [];
+        this.allVolumes = (res.result.data || []).map(v => ({
+          ...v,
+          createDate: this.formatDate(v.createTime),
+          updateDate: this.formatDate(v.updateTime)
+        }));
       }
     } catch (e) {
       console.error('Load from cloud failed', e);
@@ -85,6 +89,16 @@ Page({
       volumes: filteredVolumes,
       currentIndex: targetIndex
     });
+  },
+
+  formatDate(dateObj) {
+    if (!dateObj) return '-';
+    const date = new Date(dateObj);
+    if (isNaN(date.getTime())) return '-';
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}/${month}/${day}`;
   },
 
   onSearchInput(e) {
@@ -169,7 +183,7 @@ Page({
     }
 
     const classifications = classificationInput
-      .split(',')
+      .split(/[,，]/)
       .map(t => t.trim())
       .filter(Boolean)
       .slice(0, 8);
@@ -239,6 +253,108 @@ Page({
   goToBookmark(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/bookmark/bookmark?id=${id}` });
+  },
+
+  batchOCRUpload(e) {
+    const volumeId = e.currentTarget.dataset.id;
+    if (!volumeId) {
+      wx.showToast({ title: 'No volume selected', icon: 'none' });
+      return;
+    }
+    
+    this.currentUploadVolumeId = volumeId;
+    
+    wx.chooseMedia({
+      count: 3,
+      mediaType: ['image'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempFiles = res.tempFiles;
+        if (tempFiles.length > 0) {
+          this.processBatchOCR(tempFiles);
+        }
+      },
+      fail: (err) => {
+        if (err.errMsg.indexOf('cancel') === -1) {
+          console.error('Choose media failed', err);
+        }
+      }
+    });
+  },
+
+  async processBatchOCR(tempFiles) {
+    const volumeId = this.currentUploadVolumeId;
+    
+    wx.showLoading({ title: '请等待识别', mask: true });
+    
+    const results = [];
+    
+    for (let i = 0; i < tempFiles.length; i++) {
+      const file = tempFiles[i];
+      try {
+        const timestamp = Date.now();
+        const cloudPath = `ocr_temp/${timestamp}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+        
+        const uploadRes = await wx.cloud.uploadFile({
+          cloudPath: cloudPath,
+          filePath: file.tempFilePath
+        });
+        
+        if (!uploadRes.fileID) {
+          console.error('Upload failed for image', i);
+          continue;
+        }
+        
+        const ocrRes = await wx.cloud.callFunction({
+          name: 'ocr',
+          data: { fileID: uploadRes.fileID }
+        });
+        
+        wx.cloud.deleteFile({ fileList: [uploadRes.fileID] });
+        
+        if (ocrRes.result && ocrRes.result.success && ocrRes.result.text) {
+          results.push(ocrRes.result.text);
+        }
+      } catch (err) {
+        console.error('OCR failed for image', i, err);
+      }
+    }
+    
+    wx.hideLoading();
+    
+    if (results.length === 0) {
+      wx.showToast({ title: '未识别到文字', icon: 'none' });
+      return;
+    }
+    
+    wx.showLoading({ title: '正在创建书签...', mask: true });
+    
+    let successCount = 0;
+    for (let i = 0; i < results.length; i++) {
+      try {
+        await wx.cloud.callFunction({
+          name: 'addMark',
+          data: {
+            volumeId: volumeId,
+            text: results[i].trim(),
+            page: '',
+            vertical: false
+          }
+        });
+        successCount++;
+      } catch (err) {
+        console.error('Add mark failed', err);
+      }
+    }
+    
+    wx.hideLoading();
+    
+    if (successCount > 0) {
+      wx.showToast({ title: `成功创建 ${successCount} 个书签`, icon: 'success' });
+      wx.navigateTo({ url: `/pages/bookmark/bookmark?id=${volumeId}` });
+    } else {
+      wx.showToast({ title: '创建书签失败', icon: 'none' });
+    }
   },
 
   stopPropagation() {}

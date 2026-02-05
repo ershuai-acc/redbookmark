@@ -307,6 +307,20 @@
   position: absolute;
   top: 30rpx;
   right: 36rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.upload-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(211,21,38,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  background: #F2E8CF;
 }
 
 .edit-btn {
@@ -366,9 +380,9 @@
   position: absolute;
   right: 36rpx;
   bottom: 120rpx;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  opacity: 0.4;
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
 }
 
 .archive-id text {
@@ -378,7 +392,9 @@
   color: #D31526;
   text-transform: uppercase;
   letter-spacing: 4rpx;
-  white-space: nowrap;
+  opacity: 0.4;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 .empty-state {
